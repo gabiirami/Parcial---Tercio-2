@@ -1,0 +1,119 @@
+#ifndef MEDIDORENERGIA_H
+#define MEDIDORENERGIA_H
+
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+/**
+ * @brief Clase que representa un medidor de energía.
+ * @details Permite registrar lecturas de consumo y calcular estadísticas
+ * como el consumo total y el promedio diario.
+ */
+class MedidorEnergia {
+private:
+    string serie;
+    float lecturaActual;
+    vector<float> historial;
+
+public:
+    /**
+     * @brief Constructor que inicializa el medidor con una serie.
+     * @param serie Identificador del medidor.
+     */
+    MedidorEnergia(string serie);
+
+    /**
+     * @brief Registra una nueva lectura de energía.
+     * @param valor Valor de la lectura.
+     */
+    void registrarLectura(float valor);
+
+    /**
+     * @brief Calcula el consumo total acumulado.
+     * @return Suma de todas las lecturas registradas.
+     */
+    float calcularConsumoTotal() const;
+
+    /**
+     * @brief Calcula el promedio diario de consumo.
+     * @return Promedio de las lecturas.
+     */
+    float promedioDiario() const;
+};
+
+#endif // MEDIDORENERGIA_H
+
+#include "MedidorEnergia.h"
+
+MedidorEnergia::MedidorEnergia(string serie) {
+    this->serie = serie;
+    this->lecturaActual = 0;
+}
+
+void MedidorEnergia::registrarLectura(float valor) {
+    lecturaActual = valor;
+    historial.push_back(valor);
+}
+
+float MedidorEnergia::calcularConsumoTotal() const {
+    float suma = 0;
+    for (int i = 0; i < historial.size(); i++) {
+        suma += historial[i];
+    }
+    return suma;
+}
+
+float MedidorEnergia::promedioDiario() const {
+    if (historial.size() == 0) return 0;
+    return calcularConsumoTotal() / historial.size();
+}
+
+#include <iostream>
+#include <vector>
+#include "MedidorEnergia.h"
+
+using namespace std;
+
+int main() {
+    vector<MedidorEnergia> medidores;
+    
+    // Crear objetos MedidorEnergia
+    MedidorEnergia medidor1("SERIE1234");
+    MedidorEnergia medidor2("SERIE5678");
+
+    // Almacenar objetos en STL vector
+    medidores.push_back(medidor1);
+    medidores.push_back(medidor2);
+
+    // Solicitar datos al usuario
+    float lectura;
+    for (int i = 0; i < medidores.size(); i++) {
+        cout << "Ingrese lectura para medidor " << i + 1 << ": ";
+        cin >> lectura;
+        medidores[i].registrarLectura(lectura);
+    }
+
+    // Invocar métodos de la clase
+    for (int i = 0; i < medidores.size(); i++) {
+        cout << "Consumo total del medidor " << i + 1 << ": " 
+             << medidores[i].calcularConsumoTotal() << endl;
+        cout << "Promedio diario del medidor " << i + 1 << ": " 
+             << medidores[i].promedioDiario() << endl;
+    }
+
+    return 0;
+}
+
+cmake_minimum_required(VERSION 3.10)
+
+project(MedidorEnergia)
+
+# Añadir archivo de cabecera y fuente
+add_executable(MedidorEnergia main.cpp MedidorEnergia.cpp)
+
+# Incluir directorios
+include_directories(include)
+};
